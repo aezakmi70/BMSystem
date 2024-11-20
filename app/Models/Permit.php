@@ -5,20 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CertificateRequest extends Model
+class Permit extends Model
 {
     use HasFactory;
 
     /**
-     
-     * @var array<int, string>
+     * The table associated with the model.
+     *
+     * @var string
      */
-    protected $table = 'tblclearance';
+    protected $table = 'tblpermit';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'clearanceNo',
         'residentid',
-        'findings',
-        'purpose',
+        'businessName',
+        'businessAddress',
+        'typeOfBusiness',
         'orNo',
         'samount',
         'dateRecorded',

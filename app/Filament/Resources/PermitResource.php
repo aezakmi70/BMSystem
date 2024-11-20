@@ -2,56 +2,58 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CertificateRequestResource\Pages;
-use App\Models\CertificateRequest;
+use App\Filament\Resources\PermitResource\Pages;
+use App\Models\Permit;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
+use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Resources\Resource;
 
-class CertificateRequestResource extends Resource
+class PermitResource extends Resource
 {
-    protected static ?string $model = CertificateRequest::class;
+    protected static ?string $model = Permit::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                TextInput::make('clearanceNo')
-                    ->label('Clearance No')
-                    ->required()
-                    ->numeric(),
                 TextInput::make('residentid')
                     ->label('Resident ID')
-                    ->required()
-                    ->numeric(),
-                Textarea::make('findings')
-                    ->label('Findings')
+                    ->numeric()
                     ->required(),
-                Textarea::make('purpose')
-                    ->label('Purpose')
+                Textarea::make('businessName')
+                    ->label('Business Name')
+                    ->required(),
+                Textarea::make('businessAddress')
+                    ->label('Business Address')
+                    ->required(),
+                TextInput::make('typeOfBusiness')
+                    ->label('Type of Business')
+                    ->maxLength(50)
                     ->required(),
                 TextInput::make('orNo')
-                    ->label('OR No')
-                    ->required()
-                    ->numeric(),
+                    ->label('OR Number')
+                    ->numeric()
+                    ->required(),
                 TextInput::make('samount')
                     ->label('Amount')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->required(),
                 DatePicker::make('dateRecorded')
                     ->label('Date Recorded')
                     ->required(),
                 TextInput::make('recordedBy')
                     ->label('Recorded By')
+                    ->maxLength(50)
                     ->required(),
                 TextInput::make('status')
                     ->label('Status')
+                    ->maxLength(20)
                     ->required(),
             ]);
     }
@@ -60,18 +62,20 @@ class CertificateRequestResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('clearanceNo')
-                    ->label('Clearance No')
-                    ->sortable()
-                    ->searchable(),
                 TextColumn::make('residentid')
                     ->label('Resident ID')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('purpose')
-                    ->label('Purpose')
+                TextColumn::make('businessName')
+                    ->label('Business Name')
                     ->limit(50)
                     ->searchable(),
+               
+                TextColumn::make('typeOfBusiness')
+                    ->label('Type of Business')
+                    ->sortable()
+                    ->searchable(),
+               
                 TextColumn::make('samount')
                     ->label('Amount')
                     ->sortable()
@@ -79,13 +83,14 @@ class CertificateRequestResource extends Resource
                 TextColumn::make('dateRecorded')
                     ->label('Date Recorded')
                     ->date(),
+              
                 TextColumn::make('status')
                     ->label('Status')
                     ->sortable()
                     ->searchable(),
             ])
             ->filters([
-                // Add custom filters if needed
+                // Add filters here if needed
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -107,9 +112,9 @@ class CertificateRequestResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCertificateRequests::route('/'),
-            'create' => Pages\CreateCertificateRequest::route('/create'),
-            'edit' => Pages\EditCertificateRequest::route('/{record}/edit'),
+            'index' => Pages\ListPermits::route('/'),
+            'create' => Pages\CreatePermit::route('/create'),
+            'edit' => Pages\EditPermit::route('/{record}/edit'),
         ];
     }
 }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('birthplace');               // Birthplace of the resident
             $table->integer('age');                   // Age of the resident
             $table->string('barangay', 120);          // Barangay where the resident lives
-            $table->integer('purok', 5);               // Purok (smaller subdivision in a barangay)
+            $table->integer('purok');               // Purok (smaller subdivision in a barangay)
             $table->string('differentlyabledperson', 100)->nullable();  // Differently-abled status
             $table->string('maritalstatus', 50);      // Marital status
             $table->string('bloodtype', 10);          // Blood type

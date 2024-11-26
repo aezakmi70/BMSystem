@@ -10,18 +10,23 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('tblpermit', function (Blueprint $table) {
-            $table->id(); // Auto-increment primary key
+        Schema::create('clearance_tbl', function (Blueprint $table) {
+            $table->id(); // Auto-increment primary ke
+            $table->string('residentName');
             $table->unsignedBigInteger('residentid');
-            $table->text('businessName');
-            $table->text('businessAddress');
-            $table->string('typeOfBusiness', 50);
+            $table->text('findings');
+            $table->text('purpose');
             $table->integer('orNo');
             $table->integer('samount');
             $table->date('dateRecorded');
             $table->string('recordedBy', 50);
             $table->string('status', 20);
             $table->timestamps(); // Adds created_at and updated_at
+
+            $table->foreign('residentid')
+            ->references('id')  // Reference the `id` column of the `residents` table
+            ->on('resident_tbl')   // The table where the `id` column exists
+            ->onDelete('cascade'); // Optional: Delete the clearance record if the resident is deleted
         });
     }
 
@@ -30,6 +35,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('tblpermit');
+        Schema::dropIfExists('clearance_tbl');
     }
 };

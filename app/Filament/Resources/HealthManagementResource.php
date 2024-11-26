@@ -19,7 +19,7 @@ class HealthManagementResource extends Resource
     protected static ?string $model = HealthManagement::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
-
+    protected static ?string $navigationGroup = 'Barangay'; // Group the tab belongs to
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
@@ -27,27 +27,39 @@ class HealthManagementResource extends Resource
                 // Other form fields...
 
                 // Adding the 'residentid' select field
-                Select::make('residentid')
-    ->label('Resident')
-    ->options(function () {
-        return \App\Models\Residents::select('id', 'firstname', 'middlename', 'lastname')->get()
-            ->mapWithKeys(function ($resident) {
-                // Concatenate the full name from the selected columns
-                $fullname = trim($resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname);
-                return [$resident->id => $fullname];
-            });
-    })
-    ->transformOptionsForJsUsing(static function (Forms\Components\Select $component, array $options): array {
-        return collect($options)
-            ->map(fn ($label, $value): array => is_array($label)
-                ? ['label' => $value, 'choices' => $component->transformOptionsForJs($label)]
-                : ['label' => $label, 'value' => strval($value), 'disabled' => $component->isOptionDisabled($value, $label)])
-            ->values()
-            ->all();
-    })
-    ->searchable()
-    ->required(),
-
+                Select::make('residentName') // Store the resident's full name
+                ->label('Resident Full Name')
+                ->searchable()
+                ->getSearchResultsUsing(function (string $search) {
+                    return \App\Models\Residents::query()
+                        ->where('firstname', 'like', '%'.$search.'%')
+                        ->orWhere('middlename', 'like', '%'.$search.'%')
+                        ->orWhere('lastname', 'like', '%'.$search.'%')
+                        ->get()
+                        ->mapWithKeys(function ($resident) {
+                            // Concatenate first, middle, and last names for display, use ID as the key
+                            return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
+                        });
+                })
+                ->required()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    // Fetch the resident's full name and ID based on the selected ID and update both 'residentid' and 'residentName'
+                    $resident = \App\Models\Residents::find($state);
+                    if ($resident) {
+                        // Set the 'residentid' (store resident ID)
+                        $set('residentid', $resident->id);
+                        // Set the 'residentName' (store full name for display)
+                        $set('residentName', $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname);
+                    }
+                }),
+            
+            TextInput::make('residentid') // Store the resident's ID
+                ->label('Resident ID')
+                ->readOnly() // Make this field readonly so it can't be edited manually
+                ->required()
+                ->default(fn ($get) => $get('residentid')), // Set the resident ID based on the selected resident
+            
+            
                 TextInput::make('blood_type')
                     ->label('Blood Type')
                     ->maxLength(3)
@@ -73,9 +85,10 @@ class HealthManagementResource extends Resource
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
-            ->columns([
-                TextColumn::make('resident.fullname')
-                    ->label('Resident')
+                ->query(HealthManagement::with('resident'))
+                ->columns([
+                    TextColumn::make('residentName') // Assuming you have a `completeName` accessor on the `Official` model
+                    ->label('Resident Name')
                     ->sortable()
                     ->searchable(),
 

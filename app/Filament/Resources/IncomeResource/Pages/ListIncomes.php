@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\PermitResource\Pages;
+namespace App\Filament\Resources\IncomeResource\Pages;
 
-use App\Filament\Resources\PermitResource;
+use App\Filament\Resources\IncomeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListPermits extends ListRecords
+class ListIncomes extends ListRecords
 {
-    protected static string $resource = PermitResource::class;
+    protected static string $resource = IncomeResource::class;
 
     protected function getHeaderActions(): array
     {

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBlottersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateBlottersTable extends Migration
      */
     public function up()
     {
-        Schema::create('blotters', function (Blueprint $table) {
+        Schema::create('blotter_tbl', function (Blueprint $table) {
             $table->id(); // Primary key, auto-incrementing
-            $table->string('yearRecorded', 4);
             $table->date('dateRecorded');
             $table->string('complainant', 255);
             $table->integer('cage');
@@ -41,6 +40,6 @@ class CreateBlottersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('blotters');
+        Schema::dropIfExists('blotter_tbl');
     }
-}
+};

@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ResidentsResource extends Resource
 {
     protected static ?string $model = Residents::class;
-
+    protected static ?string $navigationGroup = 'Barangay'; // Group the tab belongs to
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
@@ -31,16 +31,40 @@ class ResidentsResource extends Resource
                 TextInput::make('birthdate')->required(),
                 TextInput::make('birthplace')->required(),
                 TextInput::make('age')->required(),
+                TextInput::make('contactNumber')->required(),
                 TextInput::make('barangay')->required(),
-                TextInput::make('purok')->required(),
+                Select::make('purok')
+                ->options([
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                ])
+                ->required(),
                 TextInput::make('differently_abled_person')->nullable(),
                 TextInput::make('marital_status')->required(),
                 TextInput::make('bloodtype')->nullable(),
                 TextInput::make('occupation')->nullable(),
-                TextInput::make('monthly_income')->required(),
+                select::make('monthly_income')
+                ->options([
+                    'low_income' => 'Low Income (PHP 10,000 or below)', 
+                    'lower_middle_income' => 'Lower Middle Income (PHP 10,001 - PHP 20,000)', 
+                    'middle_income' => 'Middle Income (PHP 20,001 - PHP 50,000)', 
+                    'upper_middle_income' => 'Upper Middle Income (PHP 50,001 - PHP 100,000)', 
+                    'high_income' => 'High Income (PHP 100,001 and above)', 
+                ])
+                ->required(),
                 TextInput::make( 'religion')->required(),
                 TextInput::make('nationality')->required(),
-                TextInput::make('gender')->required(),
+                Select::make('gender')
+                ->options([
+                    'male' => 'Male',   
+                    'female' => 'Female',
+                ])
+                ->required(),
                 TextInput::make('philhealth_No')->required(),
 
             ]);

@@ -14,7 +14,7 @@ class HealthManagement extends Model
      *
      * @var string
      */
-    protected $table = 'health_management';
+    protected $table = 'health_management_tbl';
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +23,7 @@ class HealthManagement extends Model
      */
     protected $fillable = [
         'residentid',
+        'residentName',
         'blood_type',
         'allergies',
         'medical_conditions',
@@ -41,8 +42,13 @@ class HealthManagement extends Model
     /**
      * Define a relationship to the Resident model.
      */
+    public function getResidentNameAttribute()
+    {
+        // Assuming the 'resident' relationship is defined, concatenate the first, middle, and last names.
+        return $this->resident ? "{$this->resident->firstname} {$this->resident->middlename} {$this->resident->lastname}" : null;
+    }
     public function resident()
     {
-        return $this->belongsTo(Residents::class, 'residentid');
+        return $this->belongsTo(Residents::class, 'residentid'); 
     }
 }

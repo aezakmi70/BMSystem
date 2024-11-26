@@ -10,9 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('health_management', function (Blueprint $table) {
+        Schema::create('health_management_tbl', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->unsignedBigInteger('residentid'); // Foreign key to residents table
+            $table->unsignedBigInteger('residentid');
+            $table->string('residentName'); // Foreign key to residents table
             $table->string('blood_type', 3)->nullable(); // Blood type (e.g., A+, O-)
             $table->text('allergies')->nullable(); // List of allergies
             $table->text('medical_conditions')->nullable(); // Medical conditions
@@ -22,7 +23,7 @@ return new class extends Migration {
             // Foreign key constraint (assuming a residents table exists)
             $table->foreign('residentid')
                 ->references('id')
-                ->on('residents')
+                ->on('resident_tbl')
                 ->onDelete('cascade');
         });
     }
@@ -32,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('health_management');
+        Schema::dropIfExists('health_management_tbl');
     }
 };

@@ -24,7 +24,7 @@ class BlotterRecordsResource extends Resource
     protected static ?string $model = BlotterRecords::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationGroup = 'Barangay'; // Group the tab belongs to
     public static function form(Form $form): Form
     {
         return $form
@@ -85,8 +85,10 @@ class BlotterRecordsResource extends Resource
                 Select::make('sStatus')
                     ->label('Status')
                     ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
+                        'Pending' => 'Pending',          // Complaint has been received, but no action has been taken yet.
+                        'In Progress' => 'In Progress',  // Complaint is being addressed.
+                        'Resolved' => 'Resolved',        // Complaint has been resolved.
+                        'Closed' => 'Closed',            // Complaint has been closed, no further action will be taken.
                     ])
                     ->required(),
 

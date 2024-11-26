@@ -9,11 +9,23 @@ class BlotterRecords extends Model
 {
     use HasFactory;
 
-    protected $table = 'blotters'; 
+    protected $table = 'blotter_tbl'; 
 
     protected $fillable = [
+
         'dateRecorded',
         'complainant',
-        'sStatus'
+        'cage',
+        'caddress',
+        'ccontact',
+        'personToComplain',
+        'page',
+        'paddress',
+        'pcontact',
+        'complaint',
+        'actionTaken',
+        'sStatus',
+        'locationOfIncidence',
+        'recordedby',
     ];
 }

@@ -10,12 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('tblclearance', function (Blueprint $table) {
+        Schema::create('permit_tbl', function (Blueprint $table) {
             $table->id(); // Auto-increment primary key
-            $table->integer('clearanceNo');
             $table->unsignedBigInteger('residentid');
-            $table->text('findings');
-            $table->text('purpose');
+            $table->text('businessName');
+            $table->text('businessAddress');
+            $table->string('typeOfBusiness', 50);
             $table->integer('orNo');
             $table->integer('samount');
             $table->date('dateRecorded');
@@ -30,6 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('tblclearance');
+        Schema::dropIfExists('permit_tbl');
     }
 };

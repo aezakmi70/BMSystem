@@ -13,24 +13,26 @@ class Residents extends Model
      *
      * @var array<int, string>
      */
+    protected $table = 'resident_tbl';
     protected $fillable = [
-        'lastname',                // Last name of the resident
-        'firstname',               // First name of the resident
-        'middlename',              // Middle name of the resident
-        'birthdate',               // Birthdate of the resident
-        'birthplace',              // Birthplace of the resident
-        'age',                     // Age of the resident
-        'barangay',                // Barangay where the resident lives
-        'purok',                   // Purok (area subdivision within a barangay)
-        'differentlyabledperson',  // Differently-abled status (optional)
-        'maritalstatus',           // Marital status of the resident
-        'bloodtype',               // Blood type of the resident
-        'occupation',              // Occupation of the resident
-        'monthlyincome',           // Monthly income of the resident
-        'religion',                // Religion of the resident
-        'nationality',             // Nationality of the resident
-        'gender',                  // Gender of the resident
-        'philhealthNo',            // PhilHealth number
+        'lastname',              
+        'firstname',             
+        'middlename',            
+        'birthdate',           
+        'birthplace',              
+        'age',   
+        'contactNumber',            
+        'barangay',              
+        'purok',                   
+        'differentlyabledperson', 
+        'maritalstatus',           
+        'bloodtype',               
+        'occupation',              
+        'monthlyincome',           
+        'religion',                
+        'nationality',             
+        'gender',                 
+        'philhealthNo',           
 
     ];
 

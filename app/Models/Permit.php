@@ -14,7 +14,7 @@ class Permit extends Model
      *
      * @var string
      */
-    protected $table = 'tblpermit';
+    protected $table = 'permit_tbl';
 
     /**
      * The attributes that are mass assignable.

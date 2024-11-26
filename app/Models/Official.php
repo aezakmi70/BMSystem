@@ -17,10 +17,17 @@ class Official extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $table = 'official_tbl';
     protected $fillable = [
+        'position',
         'completeName',
         'email',
-        'password',
+        'contactNumber', 
+        'address',
+        'termStart',
+        'termEnd',
+        'status',
+        'password', 
     ];
 
     /**
@@ -32,7 +39,15 @@ class Official extends Authenticatable
         'password',
         'remember_token',
     ];
-
+    public function getResidentNameAttribute()
+    {
+        // Assuming the 'resident' relationship is defined, concatenate the first, middle, and last names.
+        return $this->resident ? "{$this->resident->firstname} {$this->resident->middlename} {$this->resident->lastname}" : null;
+    }
+    public function resident()
+    {
+        return $this->belongsTo(Residents::class, 'residentid'); 
+    }
     /**
      * The attributes that should be cast.
      *

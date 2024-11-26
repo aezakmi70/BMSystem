@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('official', function (Blueprint $table) {
+        Schema::create('official_tbl', function (Blueprint $table) {
             $table->id(); // This defaults to an unsigned bigint as primary key
-            $table->string('Position', 50);
-            $table->text('ofirstname');
-            $table->text('olastname');
-            $table->text('omiddlename');
+            $table->string('position', 50);
+            $table->text('completeName');
             $table->text('email');
-            $table->string('pcontact', 20);
-            $table->text('paddress');
+            $table->string('contactNumber', 20);
+            $table->text('address');
             $table->date('termStart');
             $table->date('termEnd');
             $table->string('status', 20);
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('table_official');
+        Schema::dropIfExists('official_tbl');
     }
 };

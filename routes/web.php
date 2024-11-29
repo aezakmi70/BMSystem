@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\CertificateRequestController;
+use App\Models\CertificateRequest;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
-use App\Http\Controllers\CertificateRequestController;
-use App\Http\Controllers\IncomeController;
+
+
+Route::get('/print/certificate/{id}', [CertificateRequest::class, 'generatePdf'])->name('print.certificate');
 
 Route::resource('certificate-requests', CertificateRequestController::class);
 

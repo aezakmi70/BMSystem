@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\blotter_records;
+use App\Models\BlotterRecords;
 use Illuminate\Http\Request;
 
 class BlotterRecordsController extends Controller
@@ -34,7 +34,7 @@ class BlotterRecordsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(blotter_records $blotter_records)
+    public function show(BlotterRecords $blotter_records)
     {
         //
     }
@@ -42,7 +42,7 @@ class BlotterRecordsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(blotter_records $blotter_records)
+    public function edit(BlotterRecords $blotter_records)
     {
         //
     }
@@ -50,7 +50,7 @@ class BlotterRecordsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, blotter_records $blotter_records)
+    public function update(Request $request,BlotterRecords $blotter_records)
     {
         //
     }
@@ -58,7 +58,7 @@ class BlotterRecordsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(blotter_records $blotter_records)
+    public function destroy(BlotterRecords $blotter_records)
     {
         //
     }

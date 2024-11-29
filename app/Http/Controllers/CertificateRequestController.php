@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\CertificateRequest;
 use App\Models\Income;
 use Illuminate\Http\Request;
+
 
 class CertificateRequestController extends Controller
 {
@@ -76,8 +76,9 @@ class CertificateRequestController extends Controller
     {
         // Return a view for editing the certificate request
         return view('certificate-requests.edit', compact('certificateRequest'));
+        
     }
-
+    
     /**
      * Update the specified resource in storage.
      */
@@ -100,10 +101,8 @@ class CertificateRequestController extends Controller
 
         return redirect()->route('certificate-requests.index')->with('success', 'Certificate request updated successfully.');
     }
+    
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(CertificateRequest $certificateRequest)
     {
         // Delete the certificate request

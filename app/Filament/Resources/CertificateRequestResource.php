@@ -113,17 +113,17 @@ class CertificateRequestResource extends Resource
                         TextInput::make('business_name')
                             ->label('Business Name')
                             ->required()
-                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])), 
+                            ->hidden(fn ($get) => !in_array($get('certificate_to_issue'), [4, 5])), 
 
                         TextInput::make('business_address')
                             ->label('Business Address')
                             ->required()
-                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])), 
+                            ->hidden(fn ($get) => !in_array($get('certificate_to_issue'), [4, 5])), 
 
                         TextInput::make('type_of_business')
                             ->label('Business Type')
                             ->required()
-                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])),
+                            ->hidden(fn ($get) => !in_array($get('certificate_to_issue'), [4, 5])),
                             Textarea::make('purpose')
                             ->label('Purpose')
                             ->required()
@@ -167,20 +167,33 @@ Section::make('Additional Resident Info')
                             ->searchable()
                             ->required()  
                             ->getSearchResultsUsing(function (string $search) {
-                                return Official::query()
-                                    ->where('complete_name', 'like', '%' . $search . '%')
+                                return Residents::query()
+                                    ->where('firstname', 'like', '%' . $search . '%')
+                                    ->orWhere('middlename', 'like', '%' . $search . '%')
+                                    ->orWhere('lastname', 'like', '%' . $search . '%')
                                     ->get()
-                                    ->mapWithKeys(function ($official) {
-                                        return [$official->id => $official->complete_name . ' - ' . $official->position];
+                                    ->mapWithKeys(function ($resident) {
+                                        return [$resident->id => $resident->full_name];
                                     });
                
                             })                            
+                            
                             ->afterStateUpdated(function ($state, callable $set) {
-                                $official = Official::find($state);
+                                $resident = Residents::find($state);
+                                $official = Official::where('resident_id', $state)->first();
                                 if ($official) {
-                                    $set('recorded_by', $official->complete_name);
+                                    $set('recorded_b', $resident->full_name);
                                 }
-                                
+                              
+                            })
+                            ->afterStateHydrated(function ($state, callable $set){
+                                $resident = Residents::find($state);
+                                $official = Official::where('resident_id', $state)->first();
+                                if ($official) {
+                                    $set('recorded_by', $resident->full_name);
+
+                                }
+                               
                             }),
                         
                             Select::make('present_official')
@@ -188,21 +201,33 @@ Section::make('Additional Resident Info')
                             ->searchable()
                             ->required()
                             ->getSearchResultsUsing(function (string $search) {
-                                return Official::query()
-                                    ->where('complete_name', 'like', '%' . $search . '%')
-                                    ->get()
-                                    ->mapWithKeys(function ($official) {
-                                        return [$official->id => $official->complete_name ];
-                                    });
+                                return Residents::query()
+                                ->where('firstname', 'like', '%' . $search . '%')
+                                ->orWhere('middlename', 'like', '%' . $search . '%')
+                                ->orWhere('lastname', 'like', '%' . $search . '%')
+                                ->get()
+                                ->mapWithKeys(function ($resident) {
+                                    return [$resident->id => $resident->full_name];
+                                });
                             })
                          
                             
                             ->afterStateUpdated(function ($state, callable $set) {
-                                $official = Official::find($state);
-                                if ($official) {
-                                    $set('present_official', $official->complete_name);
+                                $resident = Residents::find($state);
+                                $official = Official::where('resident_id', $state)->first();
+                                if ($resident) {
+                                    $set('official_position', $official->position);
+                                    $set('present_official', $resident->full_name);
+                                }
+                            })
+                            ->afterStateHydrated(function ($state, callable $set){
+                                $resident = Residents::find($state);
+                                $official = Official::where('resident_id', $state)->first();
+                                if ($resident) {
+                                    $set('present_official', $resident->full_name);
                                     $set('official_position', $official->position);
                                 }
+                               
                             }),
                         
                       

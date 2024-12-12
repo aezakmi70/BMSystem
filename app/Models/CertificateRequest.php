@@ -57,7 +57,7 @@ public function generatePdf($id)
     $data = $record->toArray();
 
 
-    $certificateType = $record->certificateToIssue;  
+    $certificateType = $record->certificate_to_issue;  
     
 
     $certificateTemplate = $this->getCertificateTemplate($certificateType);

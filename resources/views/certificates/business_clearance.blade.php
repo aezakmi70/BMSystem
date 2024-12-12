@@ -59,9 +59,9 @@
         <h2>Barangay Business Clearance</h2>
         <h4>TO WHOM IT MAY CONCERN:</h4>
         <p class="p1">
-            This is to certify that <strong>{{ $record['residentName'] ?? 'Unknown' }}</strong>, 
-            <strong>{{ $record['residentAge'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['residentBirthdate'] ?? 'N/A' }}</strong>, 
-            is the owner of the business named <strong>{{ $record['businessName'] ?? 'N/A' }}</strong>, located at <strong>{{ $record['businessAddress'] ?? 'N/A' }}</strong>.
+            This is to certify that <strong>{{ $record['resident_name'] ?? 'Unknown' }}</strong>, 
+            <strong>{{ $record['resident_age'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['resident_birthdate'] ?? 'N/A' }}</strong>, 
+            is the owner of the business named <strong>{{ $record['business_name'] ?? 'N/A' }}</strong>, located at <strong>{{ $record['business_address'] ?? 'N/A' }}</strong>.
         </p>
         <p class="p2">
             The business has been duly registered with the Barangay and complies with the local laws, rules, and ordinances for operation.
@@ -75,8 +75,8 @@
     </div>
 
     <div class="signature">
-        <p><strong>{{ $record['officialName'] ?? 'Unknown' }}</strong></p>
-        <p>{{ $record['officialPosition'] ?? 'Unknown' }}</p>
+        <p><strong>{{ $record['present_official'] ?? 'Unknown' }}</strong></p>
+        <p>{{ $record['official_position'] ?? 'Unknown' }}</p>
     </div>
 </body>
 </html>

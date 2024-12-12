@@ -60,6 +60,7 @@ class Residents extends Model
     {
         return $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname;
     }
+    
     public function healthProfile()
     {
         return $this->hasOne(HealthProfile::class, 'resident_id');

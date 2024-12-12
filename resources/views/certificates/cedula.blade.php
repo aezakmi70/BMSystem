@@ -59,8 +59,8 @@
         <h2>Barangay Cedula</h2>
         <h4>TO WHOM IT MAY CONCERN:</h4>
         <p class="p1">
-            This is to certify that <strong>{{ $record['residentName'] ?? 'Unknown' }}</strong>, 
-            <strong>{{ $record['residentAge'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['residentBirthdate'] ?? 'N/A' }}</strong>, 
+            This is to certify that <strong>{{ $record['resident_name'] ?? 'Unknown' }}</strong>, 
+            <strong>{{ $record['resident_age'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['resident_birthdate'] ?? 'N/A' }}</strong>, 
             is a bonafide resident of Barangay Balindog, Kidapawan, North Cotabato.
         </p>
         <p class="p2">
@@ -74,8 +74,8 @@
         </p>
     </div>
     <div class="signature">
-        <p><strong>{{ $record['officialName'] ?? 'Unknown' }}</strong></p>
-        <p>{{ $record['officialPosition'] ?? 'Unknown' }}</p>
+        <p><strong>{{ $record['present_official'] ?? 'Unknown' }}</strong></p>
+        <p>{{ $record['official_position'] ?? 'Unknown' }}</p>
     </div>
 </body>
 </html>

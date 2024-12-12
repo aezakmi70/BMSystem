@@ -59,23 +59,23 @@
         <h2>Barangay Certificate of Indigency</h2>
         <h4>TO WHOM IT MAY CONCERN:</h4>
         <p class="p1">
-            This is to certify that <strong>{{ $record['residentName'] ?? 'Unknown' }}</strong>, 
-            <strong>{{ $record['residentAge'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['residentBirthdate'] ?? 'N/A' }}</strong>, 
+            This is to certify that <strong>{{ $record['resident_name'] ?? 'Unknown' }}</strong>, 
+            <strong>{{ $record['resident_age'] ?? 'N/A' }}</strong> years of age, born on <strong>{{ $record['resident_birthdate'] ?? 'N/A' }}</strong>, 
             is a bonafide resident of Barangay Balindog, Kidapawan, North Cotabato.
         </p>
         <p class="p2">
             The above-named individual is recognized as being under the category of indigent due to their low-income status and lack of sufficient financial resources to support their daily needs.
         </p>
         <p class="p3">
-            This certification is issued upon the request of the above-namedindividual  for the purpose <strong>{{ $record['purpose'] ?? 'N/A' }}</strong>.
+            This certification is issued upon the request of the above-named individual  for the purpose <strong>{{ $record['purpose'] ?? 'N/A' }}</strong>.
         </p>
         <p class="p4">
             Given this {{ now()->format('F j, Y') }} at Balindog, Kidapawan City, North Cotabato.
         </p>
     </div>
     <div class="signature">
-        <p><strong>{{ $record['officialName'] ?? 'Unknown' }}</strong></p>
-        <p>{{ $record['officialPosition'] ?? 'Unknown' }}</p>
+        <p><strong>{{ $record['present_official'] ?? 'Unknown' }}</strong></p>
+        <p>{{ $record['official_position'] ?? 'Unknown' }}</p>
     </div>
 </body>
 </html>

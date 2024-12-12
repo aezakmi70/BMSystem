@@ -10,3 +10,4 @@ class CreateResidents extends CreateRecord
 {
     protected static string $resource = ResidentsResource::class;
 }
+

@@ -3,18 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens;
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasPanelShield;
 
-    use Notifiable;
- 
+
+    
 
     /**
      * The attributes that are mass assignable.
@@ -22,11 +25,21 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'resident_official_id',
         'name',
+        'username',
         'email',
         'password',
     ];
-
+    public function resident()
+    {
+        return $this->belongsTo(Residents::class, 'resident_id');
+    }
+    
+    public function official()
+    {
+        return $this->hasOneThrough(Official::class, Residents::class, 'id', 'resident_id', 'resident_official_id', 'id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -46,6 +59,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     /**
@@ -53,7 +67,4 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
 }

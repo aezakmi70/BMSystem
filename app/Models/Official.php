@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class Official extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -19,15 +19,11 @@ class Official extends Authenticatable
      */
     protected $table = 'official_tbl';
     protected $fillable = [
+        'resident_id',
         'position',
-        'completeName',
-        'email',
-        'contactNumber', 
-        'address',
-        'termStart',
-        'termEnd',
+        'term_start',
+        'term_end',
         'status',
-        'password', 
     ];
 
     /**
@@ -39,15 +35,25 @@ class Official extends Authenticatable
         'password',
         'remember_token',
     ];
-    public function getResidentNameAttribute()
+
+    public function getFullNameAttribute()
     {
-        // Assuming the 'resident' relationship is defined, concatenate the first, middle, and last names.
-        return $this->resident ? "{$this->resident->firstname} {$this->resident->middlename} {$this->resident->lastname}" : null;
+        return $this->firstname . ' ' . $this->middlename . ' ' . $this->lastname;
     }
+    
     public function resident()
     {
-        return $this->belongsTo(Residents::class, 'residentid'); 
+        return $this->belongsTo(Residents::class, 'resident_id'); 
     }
+
+    public function Incomes()
+{
+    return $this->hasMany(Income::class, 'resident_id');
+}
+public function blotterRecords()
+{
+    return $this->hasMany(BlotterRecords::class, 'resident_id');
+}
     /**
      * The attributes that should be cast.
      *

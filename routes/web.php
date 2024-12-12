@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\IncomeController;
+
+use App\Http\Controllers\OfficialController;
 use App\Http\Controllers\CertificateRequestController;
 use App\Models\CertificateRequest;
 /*
@@ -21,9 +22,8 @@ Route::get('/print/certificate/{id}', [CertificateRequest::class, 'generatePdf']
 
 Route::resource('certificate-requests', CertificateRequestController::class);
 
+Route::resource('certificate-requests', OfficialController::class);
 
-
-Route::get('/income', [IncomeController::class, 'showIncomeByDate'])->name('income.show');
 
 Route::get('/', function () {
     return view('welcome');

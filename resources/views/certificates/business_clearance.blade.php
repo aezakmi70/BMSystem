@@ -14,8 +14,10 @@
             margin-bottom: 20px;
         }
         .header img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
+            margin: 0 0 0 2em;
+            position: absolute;
         }
         .header h1 {
             margin: 0;
@@ -46,9 +48,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="images/barangayLogo.png" alt="Barangay Logo">
+        <img src="images/logo.png.png" alt="Barangay Logo">
         <h1>Republic of the Philippines</h1>
-        <p>Province Of North Cotabato</p>
+        <p>Province Of Cotabato</p>
         <p>Kidapawan City</p>
         <p><strong>Barangay Balindog</strong></p>
     </div>
@@ -73,8 +75,8 @@
     </div>
 
     <div class="signature">
-        <p><strong>Jhon Doe</strong></p>
-        <p>Punong Barangay</p>
+        <p><strong>{{ $record['officialName'] ?? 'Unknown' }}</strong></p>
+        <p>{{ $record['officialPosition'] ?? 'Unknown' }}</p>
     </div>
 </body>
 </html>

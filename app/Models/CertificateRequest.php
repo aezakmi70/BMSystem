@@ -18,47 +18,54 @@ class CertificateRequest extends Model
     protected $table = 'clearance_tbl';
     protected $fillable = [
         'residentid',
-        'residentAge',
-        'residentBirthdate',
-        'residentName',
-        'certificateToIssue',
+        'resident_age',
+        'resident_birthdate',
+        'resident_name',
+        'certificate_to_issue',
         'purpose',
-        'orNo',
+        'or_no',
         'samount',
-        'dateRecorded',
-        'recordedBy',
+        'date_recorded',
+        'recorded_by',
         'status',
-        'businessName',
-        'businessAddress',
-        'typeOfBusiness',
+        'business_name',
+        'business_address',
+        'typeOf_business',
+        'present_official',
+        'official_position',
     ];
 
-    public function getResidentNameAttribute()
-{
-    // Assuming the 'resident' relationship is defined, concatenate the first, middle, and last names.
-    return $this->resident ? "{$this->resident->firstname} {$this->resident->middlename} {$this->resident->lastname}" : null;
-}
+
+public function income()
+    {
+        return $this->hasOne(Income::class, 'certificate_request_id', 'id');
+    }
+    
 public function resident()
 {
     return $this->belongsTo(Residents::class, 'residentid'); 
 }
+public function official()
+{
+    return $this->belongsTo(Official::class, 'officialid'); 
+}
 
 public function generatePdf($id)
 {
-    // Fetch the certificate request
+
     $record = CertificateRequest::findOrFail($id);
     $data = $record->toArray();
 
-    // Get the certificate type selected
-    $certificateType = $record->certificateToIssue;  // Assuming 'certificateToIssue' holds the index of the selected certificate
+
+    $certificateType = $record->certificateToIssue;  
     
-    // Match the certificate type with the templates
+
     $certificateTemplate = $this->getCertificateTemplate($certificateType);
     
-    // Generate PDF using the Blade template
+
     $pdf = Pdf::loadView($certificateTemplate, ['record' => $data]);
 
-    // Check if the user wants to download the file
+
     if (request()->has('download')) {
         return response()->streamDownload(
             fn () => print($pdf->output()),
@@ -66,16 +73,16 @@ public function generatePdf($id)
         );
     }
 
-    // Default: display the PDF inline in the browser
+
     return response($pdf->output(), 200)
         ->header('Content-Type', 'application/pdf')
         ->header('Content-Disposition', 'inline; filename="certificate_request_' . now()->format('YmdHis') . '.pdf"');
 }
 
-// Helper function to return the Blade view for the selected certificate
+
 protected function getCertificateTemplate($certificateType)
 {
-    // Map the selected certificate type to its Blade template
+
     $templates = [
         0 => 'certificates.indigency',      // Certificate of Indigency
         1 => 'certificates.clearance',      // BRGY. Clearance
@@ -87,7 +94,6 @@ protected function getCertificateTemplate($certificateType)
         7 => 'certificates.cutting_permit',    // Cutting Permit
     ];
 
-    // Return the corresponding Blade view or a default one if not found
     return $templates[$certificateType] ?? 'certificates.default';
 }
         protected $casts = [

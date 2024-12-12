@@ -7,44 +7,46 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up(): void
     {
         Schema::create('clearance_tbl', function (Blueprint $table) {
-            $table->id(); // Auto-increment primary ke
-            $table->string('residentName');
+            $table->id(); // Auto-increment primary key
+            $table->string('resident_name');
             $table->unsignedBigInteger('residentid');
-            $table->unsignedBigInteger('residentAge');
-            $table->date('residentBirthdate');
-            $table->text('certificateToIssue');
+            $table->integer('resident_age')->unsigned();  // Ensure this is an integer
+            $table->date('resident_birthdate');
+            $table->text('certificate_to_issue');
             $table->text('purpose');
-            $table->integer('orNo');
+            $table->integer('or_no');
             $table->integer('samount');
-            $table->date('dateRecorded');
-            $table->string('recordedBy', 50);
+            $table->date('date_recorded');
+            $table->string('recorded_by', 50);
             $table->string('status', 20);
-            $table->timestamps(); // Adds created_at and updated_at
-            $table->text('businessName')->nullable();
-            $table->text('businessAddress')->nullable();
-            $table->string('typeOfBusiness', 50)->nullable();
-            $table->foreign('residentid')
-            ->references('id')  // Reference the `id` column of the `residents` table
-            ->on('resident_tbl')   // The table where the `id` column exists
-            ->onDelete('cascade'); // Optional: Delete the clearance record if the resident is deleted
-            $table->foreign('residentAge')
-                ->references('age') // Reference the `age` column from the `resident_tbl`
-                ->on('resident_tbl')
-                ->onDelete('cascade');
+            $table->text('business_name')->nullable();
+            $table->text('business_address')->nullable();
+            $table->string('type_of_business', 50)->nullable();
+            $table->string('present_official');
+            $table->string('official_position');
+            $table->timestamps(); 
 
-            $table->foreign('residentBirthdate')
-                ->references('birthdate') // Reference the `birthdate` column from the `resident_tbl`
-                ->on('resident_tbl')
-                ->onDelete('cascade');
+            // Foreign key relationships
+            $table->foreign('residentid')
+                ->references('id') 
+                ->on('resident_tbl')  
+                ->onDelete('cascade'); 
+
+
+            
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down(): void
     {

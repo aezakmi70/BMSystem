@@ -4,26 +4,33 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CertificateRequestResource\Pages;
 use App\Models\CertificateRequest;
-use Dompdf\FrameDecorator\Inline;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Text;
+use App\Models\Official;
+use App\Models\Residents;
 use DateTime;
+use Filament\Forms\Components\Section;
 
 class CertificateRequestResource extends Resource
 {
     protected static ?string $model = CertificateRequest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-printer';
     protected static ?string $navigationGroup = 'Barangay'; // Group the tab belongs to
+    protected static ?string $activeNavigationIcon = 'heroicon-o-check-badge';
 
-    // Define price for each purpose
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', '=', 'pending')->count();
+    }
+
     protected static $certificates = [
         0 => 'Certificate of Indigency',
         1 => 'BRGY. Clearance',
@@ -47,175 +54,240 @@ class CertificateRequestResource extends Resource
     ];
     
     public static function form(Forms\Form $form): Forms\Form
-{
-    return $form
-                
-        ->schema([
-            Forms\Components\Section::make('Additional Resident Info')
+    {
+        return $form
             ->schema([
-            TextInput::make('residentid')
-                ->label('Resident ID')
-                ->readonly(),
-                
-              
-    
-            TextInput::make('residentAge')
-                ->label('Resident Age')
-                ->readonly(),
-              
 
-            TextInput::make('residentBirthdate')
-                ->label('Resident Birthdate')
-                ->readonly(),
-                
+                Section::make()
+                    ->schema([
+                        Select::make('resident_name')
+                            ->label('Resident FullName')
+                            ->searchable()
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Residents::query()
+                                    ->where('firstname', 'like', '%' . $search . '%')
+                                    ->orWhere('middlename', 'like', '%' . $search . '%')
+                                    ->orWhere('lastname', 'like', '%' . $search . '%')
+                                    ->get()
+                                    ->mapWithKeys(function ($resident) {
+                                        return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
+                                    });
+                            })
+                            ->required()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $resident = Residents::find($state);
+                                if ($resident) {
+                                    $set('residentid', $resident->id);
+                                    $set('resident_birthdate', $resident->birthdate);
+                                    $set('resident_age', (new DateTime($resident->birthdate))->diff(new DateTime())->y);
+                                    $set('resident_name', $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname);
+                                }
+                            }),
 
-            ])
-            ->columns(3),
+                        Select::make('certificate_to_issue')
+                            ->label('Certificate to Issue')
+                            ->required()
+                            ->options(self::$certificates)
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $index = (int)$state;
+                                if (isset(self::$prices[$index])) {
+                                    $set('samount', self::$prices[$index]);
+                                }
+                                if ($state == 4 || $state == 5) { 
+                                    $set('business_name', '');
+                                    $set('business_address', '');
+                                    $set('type_of_business', '');
+                                } else {
+                                    $set('business_name', null);
+                                    $set('business_address', null);
+                                    $set('type_of_business', null);
+                                }
+                            }),
 
+                        TextInput::make('or_no')
+                            ->label('OR No')
+                            ->required()
+                            ->numeric(),
 
-            Forms\Components\Section::make()
-            ->schema([
-             // Resident Name and ID
-             Select::make('residentName')
-             ->label('Resident Full Name')
-             ->searchable()
-             ->getSearchResultsUsing(function (string $search) {
-                 return \App\Models\Residents::query()
-                     ->where('firstname', 'like', '%'.$search.'%')
-                     ->orWhere('middlename', 'like', '%'.$search.'%')
-                     ->orWhere('lastname', 'like', '%'.$search.'%')
-                     ->get()
-                     ->mapWithKeys(function ($resident) {
-                         return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
-                     });
-             })
-             ->required()
-             ->afterStateUpdated(function ($state, callable $set) {
-                 $resident = \App\Models\Residents::find($state);
-                 if ($resident) {
-                     $set('residentid', $resident->id);
-                     $set('residentBirthdate', $resident->birthdate);
-                     $set('residentAge', (new DateTime($resident->birthdate))->diff(new DateTime())->y);
-                     $set('residentName', $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname);
-                 }
-             }),
-             //Certificate to Issue
-            Select::make('certificateToIssue')
-                ->label('Certificate to Issue')
-                ->required()
-                ->options(self::$certificates)
-                ->reactive()
-                ->afterStateUpdated(function (callable $set, $state) {
-                    $index = (int) $state;
-                    //Index for setting amount
-                    if (isset(self::$prices[$index])) {
-                        $set('samount', self::$prices[$index]);
-                    } 
-                    if ($state == 4) {  // Business Clearance selected
-                        $set('businessName', ''); 
-                        $set('businessAddress', ''); 
-                        $set('typeOfBusiness', '');
-                    } else {
-                        $set('businessName', null);
-                        $set('businessAddress', null);
-                        $set('typeOfBusiness', null);
-                    }
-                }),
+                        TextInput::make('business_name')
+                            ->label('Business Name')
+                            ->required()
+                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])), 
 
+                        TextInput::make('business_address')
+                            ->label('Business Address')
+                            ->required()
+                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])), 
+
+                        TextInput::make('type_of_business')
+                            ->label('Business Type')
+                            ->required()
+                            ->hidden(fn ($get) => !in_array($get('certificateToIssue'), [4, 5])),
+                            Textarea::make('purpose')
+                            ->label('Purpose')
+                            ->required()
+                            
+                    ])
+                    ->columnSpan(2)
+                    ->columns(3)
+                    ->reactive(),
+//
+
+Section::make('Additional Resident Info')
+    ->schema([
+        TextInput::make('residentid')
+            ->label('Resident ID')
+            ->readonly(),
            
-            // Purpose and other common fields
-            Textarea::make('purpose')
-                ->label('Purpose')
-                ->required(),
+        TextInput::make('resident_age')
+            ->label('Resident Age')
+            ->readonly(),
+           
 
-            // Amount based on purpose
-            TextInput::make('orNo')
-                ->label('OR No')
-                ->required()
-                ->numeric(),
+        TextInput::make('resident_birthdate')
+            ->label('Resident Birthdate')
+            ->readonly(),
+            
+    ])
+    ->hidden(fn ($get) => !$get('resident_name'))
+    ->columns(3),
 
-            TextInput::make('samount')
-                ->label('Amount')
-                ->required()
-                ->numeric()
-                ->readonly(),
 
-            DatePicker::make('dateRecorded')
-                ->label('Date Recorded')
-                ->required(),
-
-            TextInput::make('recordedBy')
-                ->label('Recorded By')
-                ->required(),
-
-            Select::make('status')
-                ->label('Status')
-                ->options([
-                    'pending' => 'Pending',
-                    'issued' => 'Issued',
-                    'cancelled' => 'Cancelled',
-                    'rejected' => 'Rejected',
-                ])
-                ->required()
-                ->default('pending'),
-
-            // Additional fields for Business Clearance purpose
-            TextInput::make('businessName')
-                ->label('Business Name')
-                ->required()
-                ->hidden(fn ($get) => $get('certificateToIssue') != 4), // Only show if Business Clearance is selected
-
-            Textarea::make('businessAddress')
-                ->label('Business Address')
-                ->required()
-                ->hidden(fn ($get) => $get('certificateToIssue') != 4), // Only show if Business Clearance is selected
-                
-            Textarea::make('typeOfBusiness')
-                ->label('Business Type')
-                ->required()
-                ->hidden(fn ($get) => $get('certificateToIssue') != 4), // Only show if Business Clearance is selected
-                ])
-                ->columnSpan(2) 
-                ->columns(3)
-                ->reactive(),
-
-                
-
-        ]);
-}
+    //
+                Section::make()
+                    ->schema([
+                        TextInput::make('samount')
+                            ->label('Amount')
+                            ->required()
+                            ->numeric()
+                            ->readonly(),
+                            Select::make('recorded_by')
+                            ->label('Recorded By')
+                            ->searchable()
+                            ->required()  
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Official::query()
+                                    ->where('complete_name', 'like', '%' . $search . '%')
+                                    ->get()
+                                    ->mapWithKeys(function ($official) {
+                                        return [$official->id => $official->complete_name . ' - ' . $official->position];
+                                    });
+               
+                            })                            
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $official = Official::find($state);
+                                if ($official) {
+                                    $set('recorded_by', $official->complete_name);
+                                }
+                                
+                            }),
+                        
+                            Select::make('present_official')
+                            ->label('Officer Of The Day')
+                            ->searchable()
+                            ->required()
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Official::query()
+                                    ->where('complete_name', 'like', '%' . $search . '%')
+                                    ->get()
+                                    ->mapWithKeys(function ($official) {
+                                        return [$official->id => $official->complete_name ];
+                                    });
+                            })
+                         
+                            
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $official = Official::find($state);
+                                if ($official) {
+                                    $set('present_official', $official->complete_name);
+                                    $set('official_position', $official->position);
+                                }
+                            }),
+                        
+                      
+                        
+                            
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'issued' => 'Issued',
+                                'cancelled' => 'Cancelled',
+                                'rejected' => 'Rejected',
+                            ])
+                            ->required()
+                            ->default('pending'),
+                            
+                            DatePicker::make('date_recorded')
+                            ->label('Date Recorded')
+                            ->required()
+                            ->default(now()), // Set default value to the current date
+                        
+                         
+                            TextInput::make('official_position')
+                            ->label('Position')
+                            ->required()
+                            ->readonly(),
+                            
+                    ])
+                            ->columnSpan(2)
+                            ->columns(3)
+                            ->reactive(),
+                    
+            ]);
+    }
 
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
-            ->query(CertificateRequest::with('resident'))
+            
             ->columns([
                 TextColumn::make('resident_name')
                     ->label('Resident Name')
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
+                    
 
-                TextColumn::make('certificateToIssue')
+                TextColumn::make('certificate_to_issue')
                     ->label('Certificate Issued')
-                    ->sortable()
-                    ->searchable()
                     ->formatStateUsing(function ($state) {
                         return self::$certificates[$state] ?? 'Unknown';
                     }),
 
                 TextColumn::make('samount')
                     ->label('Amount')
-                    ->sortable()
-                    ->searchable(),
+                    ->money('PHP'),
 
-                TextColumn::make('dateRecorded')
+                TextColumn::make('date_recorded')
                     ->label('Date Recorded')
                     ->date(),
 
+                    TextColumn::make('present_official')
+                    ->label('Attending Official'),
+
                 TextColumn::make('status')
                     ->label('Status')
-                    ->sortable()
-                    ->searchable(),
-            ]); 
+                    ->badge()
+                    ->color(function ($record) {
+                        { return $record->status === 'issued' ? 'primary' : 'warning';}
+                    })
+                    ->icon(function ($record) {
+                        return match ($record->status) {
+                            'issued' => 'heroicon-o-check-circle',
+                            'pending' => 'heroicon-o-ellipsis-horizontal-circle',     
+                            'rejected' => 'heroicon-o-x-circle', 
+ 
+                        };
+                        
+                    })  
+                    
+                       
+                   
+                   
+                    
+                    ])->striped();
+                    
+            
     }
 
     public static function getPages(): array

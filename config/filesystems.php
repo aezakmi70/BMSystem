@@ -43,6 +43,7 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+       
 
         's3' => [
             'driver' => 's3',
@@ -69,8 +70,6 @@ return [
     |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
-
+    
+   
 ];

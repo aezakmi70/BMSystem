@@ -14,8 +14,10 @@
             margin-bottom: 20px;
         }
         .header img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
+            margin: 0 0 0 2em;
+            position: absolute;
         }
         .header h1 {
             margin: 0;
@@ -46,9 +48,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="images/barangayLogo.png" alt="Barangay Logo">
+        <img src="images/logo.png" alt="Barangay Logo" >
         <h1>Republic of the Philippines</h1>
-        <p>Province Of North Cotabato</p>
+        <p>Province Of Cotabato</p>
         <p>Kidapawan City</p>
         <p><strong>Barangay Balindog</strong></p>
     </div>
@@ -65,11 +67,15 @@
             The above-named individual is recognized as being under the category of indigent due to their low-income status and lack of sufficient financial resources to support their daily needs.
         </p>
         <p class="p3">
-            This certification is issued upon the request of the individual for the purpose <strong>{{ $record['purpose'] ?? 'N/A' }}</strong>.
+            This certification is issued upon the request of the above-namedindividual  for the purpose <strong>{{ $record['purpose'] ?? 'N/A' }}</strong>.
         </p>
         <p class="p4">
             Given this {{ now()->format('F j, Y') }} at Balindog, Kidapawan City, North Cotabato.
         </p>
+    </div>
+    <div class="signature">
+        <p><strong>{{ $record['officialName'] ?? 'Unknown' }}</strong></p>
+        <p>{{ $record['officialPosition'] ?? 'Unknown' }}</p>
     </div>
 </body>
 </html>

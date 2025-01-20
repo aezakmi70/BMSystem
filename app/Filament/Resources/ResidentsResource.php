@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ResidentsResource\Pages;
 use App\Models\Residents;
-use Filament\Tables\Actions\ExportAction;
+
+
+use pxlrbt\FilamentExcel\Columns\Column;
 use App\Filament\Exports\ResidentsExporter;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -19,6 +21,8 @@ use Filament\Forms\Form;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ResidentsResource extends Resource
 {
@@ -328,8 +332,18 @@ class ResidentsResource extends Resource
                 //
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(ResidentsExporter::class)
+                ExportAction::make()->exports([
+                    ExcelExport::make()->withFilename(date('Y-m-d') . ' - export')
+                    ->withColumns([
+                        Column::make('firstname'),
+                        Column::make('middlename'),
+                        Column::make('lastname'),
+                        Column::make('age'),
+                        Column::make('address'),
+                        Column::make('contact_number'),
+                    ]),
+                    
+                ])
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

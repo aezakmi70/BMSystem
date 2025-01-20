@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\HealthServiceResource\Pages;
 use App\Models\HealthService;
 use App\Models\Residents;
+use App\Models\Official;
 use Filament\Forms;
 use App\Filament\Forms\Components\ResidentField;
 use Filament\Forms\Components\Section;
@@ -40,10 +41,50 @@ class HealthServiceResource extends Resource
                         'Other' => 'Other',
                     ])
                     ->required(),
-                
-                TextInput::make('provided_by')
-                    ->maxLength(100)
+
+
+
+
+                    //
+                    Select::make('provided_by')
+                    ->label('Recorded By')
+                    ->searchable()
+                    ->required()  
+                    ->getSearchResultsUsing(function (string $search) {
+                        return Residents::query()
+                            ->where('firstname', 'like', '%' . $search . '%')
+                            ->orWhere('middlename', 'like', '%' . $search . '%')
+                            ->orWhere('lastname', 'like', '%' . $search . '%')
+                            ->get()
+                            ->mapWithKeys(function ($resident) {
+                                return [$resident->id => $resident->full_name];
+                            });
+       
+                    })                            
+                    
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $resident = Residents::find($state);
+                        $official = Official::where('resident_id', $state)->first();
+                        if ($official) {
+                            $set('provided_by', $resident->full_name);
+                        }
+                      
+                    })
+                    ->afterStateHydrated(function ($state, callable $set){
+                        $resident = Residents::find($state);
+                        $official = Official::where('resident_id', $state)->first();
+                        if ($official) {
+                            $set('provided_by', $resident->full_name);
+
+                        }
+                       
+                    })
                     ->columnSpan(2),
+                
+
+
+
+
                Select::make('status')
                     ->options([
                         'Completed' => 'Completed',

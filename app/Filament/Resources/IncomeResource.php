@@ -16,7 +16,9 @@ use App\Models\Residents;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 use App\Filament\Exports\IncomeExporter;
 
 class IncomeResource extends Resource
@@ -41,8 +43,19 @@ class IncomeResource extends Resource
         return $table
             ->headerActions([
 
-                ExportAction::make()
-                ->exporter(IncomeExporter::class),
+                
+                    ExportAction::make()->exports([
+                        ExcelExport::make()->withFilename(date('Y-m-d') . ' - export')
+                        ->withColumns([
+                            Column::make('payer'),
+                            Column::make('description'),
+                            Column::make('payment_method'),
+                            Column::make('recorded_by'),
+                            Column::make('transaction_date'),
+                        ]),
+                        
+                    ]),
+               
                 Action::make('toggle')
                     ->label(fn () => $currentView === 'income' ? 'Switch to Certificate Requests' : 'Switch to Income')
                     ->action(function () use ($currentView) {
@@ -70,7 +83,8 @@ class IncomeResource extends Resource
                             ->required(),
                         TextInput::make('amount')
                             ->label('Amount')
-                            ->required(),
+                            ->required()
+                            ->numeric(),
                      
                     ])
                     ->columns(2),

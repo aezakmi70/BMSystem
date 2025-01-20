@@ -25,7 +25,8 @@ class HealthProfileResource extends Resource
     {
         return $form
             ->schema([
-
+                Section::make()
+                ->schema([
             Section::make()
                      ->schema([
 
@@ -47,7 +48,7 @@ class HealthProfileResource extends Resource
                 ])
                 ->placeholder('Select Blood Type') // Optional placeholder
                 ->default('Unknown'), // Default option if nothing is selected
-                    
+                ]), 
             Section::make()
             ->schema([
 

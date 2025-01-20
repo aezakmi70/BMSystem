@@ -7,6 +7,8 @@ use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Widgets\PopulationOverview;
 
+
+
 class ListResidents extends ListRecords
 {
     protected static string $resource = ResidentsResource::class;
@@ -15,6 +17,8 @@ class ListResidents extends ListRecords
     {
         return [
             Actions\CreateAction::make()->label('Register Residents'),
+            
+            
         ];
     }
     protected function getHeaderWidgets(): array

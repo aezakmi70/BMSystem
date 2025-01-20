@@ -12,7 +12,10 @@ use App\Filament\Resources\FinancialRecordResource\Pages;
 use App\Models\FinancialRecords;
 use App\Filament\Exports\ExpenseExporter;
 use App\Filament\Exports\CertificateRequestExporter;
-use Filament\Tables\Actions\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+
 
 class FinancialRecordResource extends Resource
 {
@@ -30,9 +33,42 @@ class FinancialRecordResource extends Resource
         $expenseQuery = Expense::query();
 
         return $table
-            ->headerActions([
-                ExportAction::make()
-                ->exporter($currentView === 'income' ? CertificateRequestExporter::class : ExpenseExporter::class),
+        ->headerActions([
+            // Export Action
+            ExportAction::make()->exports([
+                ExcelExport::make()
+                    ->withFilename(fn () => date('Y-m-d') . ' - ' . ($currentView === 'income' ? 'income' : 'expenses') . '-export')
+                    ->withColumns(fn () => $currentView === 'income' 
+                        ? [
+                            Column::make('resident_age'),
+                            Column::make('resident_name'),
+                            Column::make('certificate_to_issue'),
+                            Column::make('samount'),
+                            Column::make('date_recorded'),
+                            Column::make('recorded_by'),
+                            Column::make('status'),
+                            Column::make('present_official'),
+                        ]
+                        : [
+                            Column::make('transaction_date'),
+                            Column::make('category'),
+                            Column::make('amount'),
+                            Column::make('description'),
+                            Column::make('paid_to'),
+                            Column::make('payment_method'),
+                            Column::make('receipt_number'),
+                        ]
+                    )
+                    ->modifyQueryUsing(function ($query) use ($currentView, $incomeQuery, $expenseQuery) {
+                        if ($currentView === 'income') {
+                            // Modify query for income (certificate_request model)
+                            return $incomeQuery;
+                        } else {
+                            // Modify query for expense (expense model or expense_tbl)
+                            return $expenseQuery;
+                        }
+                    }),
+            ]),
                 Action::make('toggle')
                     ->label('Switch View')
                     ->action(function () use ($currentView) {

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BlotterRecordsResource\Pages;
 use App\Models\BlotterRecords;
+use App\Models\Official;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
@@ -17,7 +18,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Models\Residents;
-use App\Models\Official;
+use App\Models\Respondent;
 use DateTime;
 use Filament\Forms\Components\Section;
 
@@ -170,29 +171,29 @@ class BlotterRecordsResource extends Resource
                 Section::make()
                     ->schema([
                         Select::make('respondent_id')
-                            ->label('Respondent Name')
+                            ->label('Respondent Id')
                             ->searchable()
-                            ->columnSpan(3)
                             ->getSearchResultsUsing(function (string $search) {
                                 return Residents::query()
-                                    ->where('firstname', 'like', '%' . $search . '%')
-                                    ->orWhere('middlename', 'like', '%' . $search . '%')
-                                    ->orWhere('lastname', 'like', '%' . $search . '%')
-                                    ->get()
-                                    ->mapWithKeys(function ($resident) {
-                                        return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
-                                    });
+                                ->where('firstname', 'like', '%' . $search . '%')
+                                ->orWhere('middlename', 'like', '%' . $search . '%')
+                                ->orWhere('lastname', 'like', '%' . $search . '%')
+                                ->get()
+                                ->mapWithKeys(function ($resident) {
+                                    return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
+                                });
                             })
                             ->required()
+                            ->columnSpan(3)
                             ->afterStateUpdated(function ($state, callable $set) {
-                                $respondent = Residents::find($state);
-                                if ($respondent) {
-                                    $set('respondent_id', $respondent->id);
+                                $official = Residents::find($state);
+                                if ($official) {
+                                    $set('respondent_id', $official->id);
                                 }
                             })
                             ->afterStateHydrated(function ($state, callable $set) {
                                 if ($state) {
-                                    $resident = Residents::find($state);
+                                    $resident = Official::find($state);
                                     if ($resident) {
                                         $set('respondent_id', $resident->full_name);
                                     }
@@ -223,17 +224,19 @@ class BlotterRecordsResource extends Resource
                             ->label('Recorded By')
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search) {
-                                return Official::query()
-                                    ->where('complete_name', 'like', '%' . $search . '%')
-                                    ->get()
-                                    ->mapWithKeys(function ($official) {
-                                        return [$official->id => $official->complete_name . ' - ' . $official->position];
-                                    });
+                                return Residents::query()
+                                ->where('firstname', 'like', '%' . $search . '%')
+                                ->orWhere('middlename', 'like', '%' . $search . '%')
+                                ->orWhere('lastname', 'like', '%' . $search . '%')
+                                ->get()
+                                ->mapWithKeys(function ($resident) {
+                                    return [$resident->id => $resident->firstname . ' ' . $resident->middlename . ' ' . $resident->lastname];
+                                });
                             })
                             ->required()
                             ->columnSpan(5)
                             ->afterStateUpdated(function ($state, callable $set) {
-                                $official = Official::find($state);
+                                $official = Residents::find($state);
                                 if ($official) {
                                     $set('recorded_by', $official->id);
                                 }

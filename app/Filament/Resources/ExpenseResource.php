@@ -7,6 +7,7 @@ use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -60,7 +61,7 @@ class ExpenseResource extends Resource
                             ->label('Paid To')
                             ->maxLength(100)
                             ->placeholder('Enter the payee or recipient'),
-                       Section::make('payment_method')
+                       Select::make('payment_method')
                             ->required()
                             ->label('Payment Method')
                             ->options([

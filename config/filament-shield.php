@@ -34,6 +34,10 @@ return [
         'enabled' => true,
         'name' => 'official_user',
     ],
+    'health_user' => [
+        'enabled' => true,
+        'name' => 'health_user',
+    ],
     'staff_user' => [
         'enabled' => true,
         'name' => 'staff_user',
